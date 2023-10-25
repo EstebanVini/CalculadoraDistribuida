@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="211.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.calculadora.HelloController">
+    <children>
+        <Label layoutX="26.0" layoutY="26.0" prefHeight="53.0" prefWidth="160.0" text="0" fx:id="pantalla">
+            <font>
+                <Font size="36.0"  />
+            </font>
+        </Label>
+        <Button layoutX="22.0" layoutY="100.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="1" onMouseClicked="#button1"/>
+        <Button layoutX="64.0" layoutY="100.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="2" onMouseClicked="#button2"/>
+        <Button layoutX="106.0" layoutY="100.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="3" onMouseClicked="#button3"/>
+        <Button layoutX="22.0" layoutY="142.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="4" onMouseClicked="#button4"/>
+        <Button layoutX="64.0" layoutY="142.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="5" onMouseClicked="#button5"/>
+        <Button layoutX="106.0" layoutY="142.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="6" onMouseClicked="#button6"/>
+        <Button layoutX="22.0" layoutY="184.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="7" onMouseClicked="#button7"/>
+        <Button layoutX="64.0" layoutY="184.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="8" onMouseClicked="#button8"/>
+        <Button layoutX="106.0" layoutY="184.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="9" onMouseClicked="#button9"/>
+        <Button layoutX="148.0" layoutY="100.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="+" onMouseClicked="#buttonSuma"/>
+        <Button layoutX="148.0" layoutY="142.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="-" onMouseClicked="#buttonResta"/>
+        <Button layoutX="148.0" layoutY="184.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="*" onMouseClicked="#buttonMultiplicacion"/>
+        <Button layoutX="148.0" layoutY="226.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="/" onMouseClicked="#buttonDivision"/>
+        <Button layoutX="106.0" layoutY="226.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="=" onMouseClicked="#buttonIgual"/>
+        <Button layoutX="64.0" layoutY="226.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="0" onMouseClicked="#button0"/>
+        <ScrollPane layoutX="38.0" layoutY="276.0" prefHeight="110.0" prefWidth="135.0">
+            <content>
+                <VBox prefHeight="1000.0" prefWidth="119.0" fx:id="historial"/>
+            </content>
+        </ScrollPane>
+    </children>
+</AnchorPane>
