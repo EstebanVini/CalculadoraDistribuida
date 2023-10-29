@@ -223,7 +223,7 @@ public class HelloController {
         Thread socketThread = new Thread(() -> {
             try {
 
-                socket = new Socket("127.0.0.1", 12345);
+                socket = new Socket("127.0.0.1", 12347);
                 entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 salida = new DataOutputStream(socket.getOutputStream());
 
