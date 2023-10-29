@@ -1,61 +1,60 @@
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
-import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Servidor {
-    private Socket socket;
-    private DataInputStream entrada;
-    private DataOutputStream salida;
-    private int resultado;
-    private List<Integer> middlewarePorts;
+    Socket socket;
+    DataInputStream entrada;
+    DataOutputStream salida;
 
-    public Servidor(List<Integer> middlewarePorts) {
-        this.middlewarePorts = middlewarePorts;
-        try {
-            conectarMiddleware();
-            Thread thread = new Thread(new Mensajes());
-            thread.start();
-        } catch (IOException error) {
-            System.out.println(error);
+    int resultado;
+
+    public Servidor(List<Integer> availablePorts) {
+        while (true) {
+            int serverPort = getRandomPort(availablePorts);
+            if (serverPort == -1) {
+                System.out.println("No hay puertos disponibles para conectarse.");
+                break;
+            }
+
+            try {
+                socket = new Socket("127.0.0.1", serverPort);
+
+                entrada = new DataInputStream(System.in);
+                salida = new DataOutputStream(socket.getOutputStream());
+
+                Thread thread = new Thread(new Mensajes());
+                thread.start();
+
+                System.out.println("Conexión establecida con middleware en el puerto " + serverPort);
+                // Esperar a que la conexión se cierre antes de intentar una nueva conexión
+                thread.join();
+            } catch (IOException | InterruptedException error) {
+                System.out.println("No se pudo conectar al middleware en el puerto " + serverPort + ". Reintentando...");
+            }
         }
     }
 
-    private void conectarMiddleware() throws IOException {
-        // Mezcla aleatoriamente los puertos de middleware disponibles
-        List<Integer> puertosAleatorios = new ArrayList<>(middlewarePorts);
-        Random random = new Random();
-        for (int i = puertosAleatorios.size() - 1; i > 0; i--) {
-            int j = random.nextInt(i + 1);
-            int temp = puertosAleatorios.get(i);
-            puertosAleatorios.set(i, puertosAleatorios.get(j));
-            puertosAleatorios.set(j, temp);
+    private int getRandomPort(List<Integer> availablePorts) {
+        if (!availablePorts.isEmpty()) {
+            int randomIndex = new Random().nextInt(availablePorts.size());
+            int serverPort = availablePorts.get(randomIndex);
+            availablePorts.remove(randomIndex); // Elimina el puerto usado
+            return serverPort;
         }
-
-        for (int port : puertosAleatorios) {
-            try {
-                socket = new Socket("127.0.0.1", port);
-                salida = new DataOutputStream(socket.getOutputStream());
-                break; // Si se logra la conexión, sal del bucle
-            } catch (IOException e) {
-                System.out.println("Middleware en puerto " + port + " no disponible.");
-            }
-        }
-
-        if (socket == null) {
-            throw new IOException("No se pudo conectar a ningún middleware.");
-        }
+        return -1; // No hay puertos disponibles
     }
 
     public static void main(String[] args) {
-        List<Integer> middlewarePorts = new ArrayList<>();
-        middlewarePorts.add(12346);
-        middlewarePorts.add(12347);
-        // Agrega más puertos de middleware según sea necesario
+        List<Integer> availablePorts = new ArrayList<>();
+        availablePorts.add(12345);
+        availablePorts.add(12346);
+        availablePorts.add(12347);// Agrega los puertos disponibles aquí
 
-        new Servidor(middlewarePorts);
+        new Servidor(availablePorts);
     }
 
     private class Mensajes implements Runnable {
@@ -71,11 +70,17 @@ public class Servidor {
                     if (paquete[0].startsWith("RESOLVER")) {
                         if (Objects.equals(paquete[2], "+")) {
                             result = Integer.parseInt(paquete[1]) + Integer.parseInt(paquete[3]);
-                        } else if (Objects.equals(paquete[2], "-")) {
+                        }
+
+                        if (Objects.equals(paquete[2], "-")) {
                             result = Integer.parseInt(paquete[1]) - Integer.parseInt(paquete[3]);
-                        } else if (Objects.equals(paquete[2], "*")) {
+                        }
+
+                        if (Objects.equals(paquete[2], "*")) {
                             result = Integer.parseInt(paquete[1]) * Integer.parseInt(paquete[3]);
-                        } else if (Objects.equals(paquete[2], "/")) {
+                        }
+
+                        if (Objects.equals(paquete[2], "/")) {
                             result = Integer.parseInt(paquete[1]) / Integer.parseInt(paquete[3]);
                         }
 
@@ -85,7 +90,7 @@ public class Servidor {
                     }
                 }
             } catch (IOException error) {
-                System.out.println(error);
+                System.out.println("La conexión con el middleware se ha cerrado.");
             }
         }
     }

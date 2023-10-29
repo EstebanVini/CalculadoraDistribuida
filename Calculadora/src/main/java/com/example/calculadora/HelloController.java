@@ -3,14 +3,13 @@ package com.example.calculadora;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
-
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 public class HelloController {
@@ -26,6 +25,10 @@ public class HelloController {
     String operacion = "";
 
     String temp = "";
+
+    private List<Socket> middlewareSockets = new ArrayList<>();
+    private List<DataInputStream> middlewareEntradas = new ArrayList<>();
+    private List<DataOutputStream> middlewareSalidas = new ArrayList();
 
 
     private Socket socket;
@@ -198,57 +201,70 @@ public class HelloController {
 
     @FXML
     void buttonIgual() {
-        String paquetePorMandar = "RESOLVER"+","+n1+","+operacion+","+n2;
+        String paquetePorMandar = "RESOLVER" + "," + n1 + "," + operacion + "," + n2;
 
         n1 = "";
         n2 = "";
         operacion = "";
         pantalla.setText("");
 
-        try
-        {
-            salida.writeUTF(paquetePorMandar);
-        } catch (IOException error)
-        {
+        try {
+            if (!middlewareSalidas.isEmpty()) {
+                int randomIndex = new Random().nextInt(middlewareSalidas.size());
+                DataOutputStream salida = middlewareSalidas.get(randomIndex);
+                salida.writeUTF(paquetePorMandar);
+            } else {
+                System.out.println("No se ha establecido una conexión con el middleware.");
+            }
+        } catch (IOException error) {
             System.out.println(error);
         }
-
     }
 
 
-    public void initialize()
-    {
+    public void initialize() {
+        // Agrega los puertos disponibles en la lista
+        List<Integer> availablePorts = new ArrayList<>();
+        availablePorts.add(12345);
+        availablePorts.add(12346);
+        availablePorts.add(12347);// Agrega los puertos disponibles aquí
 
         // Start a new thread for socket communication.
         Thread socketThread = new Thread(() -> {
-            try {
+            while (true) {
+                for (int port : availablePorts) {
+                    try {
+                        Socket socket = new Socket("127.0.0.1", port);
+                        DataInputStream entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                        DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
 
-                socket = new Socket("127.0.0.1", 12347);
-                entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-                salida = new DataOutputStream(socket.getOutputStream());
+                        middlewareSockets.add(socket);
+                        middlewareEntradas.add(entrada);
+                        middlewareSalidas.add(salida);
 
-                while (true) {
+                        System.out.println("Conexión establecida con middleware en el puerto " + port);
 
-                    temp = entrada.readUTF();
-                    String messageParts[] = temp.split(",");
-                    if(temp.startsWith("MOSTRAR"))
-                    {
-                        String resultado = messageParts[1]+" "+messageParts[2]+" "+messageParts[3]+" = "+messageParts[4];
-                        historialResultados.add(resultado);
-                        Platform.runLater(() -> {
-                            Label resultLabel = new Label(resultado);
-                            historial.getChildren().add(resultLabel);
-                        });
+                        while (true) {
+                            temp = entrada.readUTF();
+                            String messageParts[] = temp.split(",");
+                            if (temp.startsWith("MOSTRAR")) {
+                                String resultado = messageParts[1] + " " + messageParts[2] + " " + messageParts[3] + " = " + messageParts[4];
+                                historialResultados.add(resultado);
+                                Platform.runLater(() -> {
+                                    Label resultLabel = new Label(resultado);
+                                    historial.getChildren().add(resultLabel);
+                                });
+                            }
+                        }
+                    } catch (IOException e) {
+                        // Manejar la excepción si no se puede conectar a un middleware
+                        System.out.println("No se pudo conectar al middleware en el puerto " + port);
+                        continue; // Intentar con el siguiente puerto
                     }
-
-
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         });
         socketThread.setDaemon(true);
         socketThread.start();
     }
-
 }
