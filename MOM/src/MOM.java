@@ -121,6 +121,7 @@ public class MOM {
     // Método para eliminar un middleware desconectado de la lista de middlewares conectados
     public void removeDisconnectedMiddleware(int port) {
         middlewaresConectados.remove(port);
+        System.out.println("Middleware en puerto " + port + " desconectado.");
     }
 
     // Realiza un apagado limpio
@@ -204,6 +205,36 @@ public class MOM {
                         int port = Integer.parseInt(parts[1]);
                         // Remove the disconnected middleware's port from the list of connected middlewares.
                         removeDisconnectedMiddleware(port);
+                    } else if (temp.startsWith("RESOLVER")) {
+                        String[] parts = temp.split(",");
+                        int sourcePort = Integer.parseInt(parts[5]);
+                        if (sourcePort == socket.getLocalPort()) {
+                            // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
+                            for (DataOutputStream salidaMiddleware : middlewareSalidas) {
+                                try {
+                                    salidaMiddleware.writeUTF(temp);
+                                    salidaMiddleware.flush(); // Asegura que los datos se envíen de inmediato
+                                } catch (IOException e) {
+                                    // Manejar la excepción si falla el envío a un middleware.
+                                    System.err.println("Error al enviar mensaje a un middleware: " + e);
+                                }
+                            }
+                        }
+                    } else if (temp.startsWith("MOSTRAR")) {
+                        String[] parts = temp.split(",");
+                        int sourcePort = Integer.parseInt(parts[6]);
+                        if (sourcePort == socket.getLocalPort()) {
+                            // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
+                            for (DataOutputStream salidaMiddleware : middlewareSalidas) {
+                                try {
+                                    salidaMiddleware.writeUTF(temp);
+                                    salidaMiddleware.flush(); // Asegura que los datos se envíen de inmediato
+                                } catch (IOException e) {
+                                    // Manejar la excepción si falla el envío a un middleware.
+                                    System.err.println("Error al enviar mensaje a un middleware: " + e);
+                                }
+                            }
+                        }
                     }
                     for (ManejadorDeClientes client : clientes) {
                         if (client != this) {
