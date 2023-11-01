@@ -25,6 +25,8 @@ public class HelloController {
 
     String temp = "";
 
+    int puertoActual = 0;
+
     private List<Socket> middlewareSockets = new ArrayList<>();
     private List<DataInputStream> middlewareEntradas = new ArrayList<>();
     private List<DataOutputStream> middlewareSalidas = new ArrayList();
@@ -198,7 +200,9 @@ public class HelloController {
 
     @FXML
     void buttonIgual() {
-        String paquetePorMandar = "RESOLVER" + "," + n1 + "," + operacion + "," + n2;
+        String paquetePorMandar = "RESOLVER" + "," + n1 + "," + operacion + "," + n2 + "," + "ORIGEN" + "," + puertoActual;
+
+        System.out.println(paquetePorMandar);
 
         n1 = "";
         n2 = "";
@@ -242,16 +246,28 @@ public class HelloController {
 
                     System.out.println("Conexión establecida con middleware en el puerto " + port);
 
+                    puertoActual = port;
+
                     while (true) {
                         temp = entrada.readUTF();
                         String messageParts[] = temp.split(",");
                         if (temp.startsWith("MOSTRAR")) {
                             String resultado = messageParts[1] + " " + messageParts[2] + " " + messageParts[3] + " = " + messageParts[4];
-                            historialResultados.add(resultado);
-                            Platform.runLater(() -> {
-                                Label resultLabel = new Label(resultado);
-                                historial.getChildren().add(resultLabel);
-                            });
+                            if (!historialResultados.isEmpty()) {
+                                if (!resultado.equals(historialResultados.get(historialResultados.size() - 1))) {
+                                    historialResultados.add(resultado);
+                                    Platform.runLater(() -> {
+                                        Label label = new Label(resultado);
+                                        historial.getChildren().add(label);
+                                    });
+                                }
+                            } else {
+                                historialResultados.add(resultado);
+                                Platform.runLater(() -> {
+                                    Label label = new Label(resultado);
+                                    historial.getChildren().add(label);
+                                });
+                            }
                         }
                     }
                 } catch (IOException e) {

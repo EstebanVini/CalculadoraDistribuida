@@ -66,6 +66,7 @@ public class Servidor {
                 while (true) {
                     String mensaje = entrada.readUTF();
                     String[] paquete = mensaje.split(",");
+                    String[] Origen = new String[]{paquete[5]};
                     int result = 0;
                     if (paquete[0].startsWith("RESOLVER")) {
                         if (Objects.equals(paquete[2], "+")) {
@@ -84,7 +85,7 @@ public class Servidor {
                             result = Integer.parseInt(paquete[1]) / Integer.parseInt(paquete[3]);
                         }
 
-                        String respuesta = "MOSTRAR," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result;
+                        String respuesta = "MOSTRAR," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + "ORIGEN" + "," + Origen[0];
 
                         salida.writeUTF(respuesta);
                     }
