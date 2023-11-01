@@ -225,7 +225,7 @@ public class HelloController {
     public void initialize() {
         availablePorts.add(12345);
         availablePorts.add(12346);
-        availablePorts.add(12347); // Agrega los puertos disponibles aquí
+        availablePorts.add(12347);
 
         Thread socketThread = new Thread(() -> {
             while (true) {
@@ -282,8 +282,7 @@ public class HelloController {
     private int getRandomPort(List<Integer> availablePorts) {
         if (!availablePorts.isEmpty()) {
             int randomIndex = random.nextInt(availablePorts.size());
-            int serverPort = availablePorts.get(randomIndex);
-            availablePorts.remove(randomIndex); // Elimina el puerto usado
+            int serverPort = availablePorts.get(randomIndex);// Elimina el puerto usado
             return serverPort;
         }
         return -1; // No hay puertos disponibles

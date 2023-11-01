@@ -10,13 +10,12 @@ public class MOM {
 
     private List<Integer> puertosOcupados;
 
-    private static Set<Integer> middlewaresConectados = new HashSet<>();
+    private  Set<Integer> middlewaresConectados = new HashSet<>();
 
     public MOM(List<Integer> availablePorts) {
         puertosDisponibles = new ArrayList<>(availablePorts);
         middlewareSockets = new ArrayList<>();
         middlewareSalidas = new ArrayList<>();
-        middlewaresConectados = new HashSet<>();
         puertosOcupados = new ArrayList<>(availablePorts);
     }
 
@@ -68,8 +67,13 @@ public class MOM {
         availablePorts.add(12347);
 
         MOM server = new MOM(availablePorts);
-        server.startMiddleware();
 
+        // Agrega un apagado limpio para manejar la desconexión
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            server.cleanShutdown();
+        }));
+
+        server.startMiddleware();
     }
 
     private void establishMiddlewareConnections() {
@@ -94,9 +98,6 @@ public class MOM {
         }
     }
 
-    public static Set<Integer> getMiddlewaresConectados() {
-        return middlewaresConectados;
-    }
 
     // conectarse a un middleware específico
     public void connectToMiddleware(int port) {
@@ -114,6 +115,49 @@ public class MOM {
             middlewaresConectados.add(port);
         } catch (IOException e) {
             System.out.println("Error al intentar conectar a otro Middleware en puerto " + port + ": " + e);
+        }
+    }
+
+    // Método para eliminar un middleware desconectado de la lista de middlewares conectados
+    public void removeDisconnectedMiddleware(int port) {
+        middlewaresConectados.remove(port);
+    }
+
+    // Realiza un apagado limpio
+    public void cleanShutdown() {
+
+        // Informar a otros middlewares sobre la desconexión antes de cerrar la conexión.
+        for (int connectedPort : middlewaresConectados) {
+            try {
+                // Create a socket to the other middleware and send the DISCONNECT message.
+                Socket disconnectSocket = new Socket("127.0.0.1", connectedPort);
+                DataOutputStream disconnectOutput = new DataOutputStream(disconnectSocket.getOutputStream());
+                disconnectOutput.writeUTF("DISCONNECT:" + servidor.getLocalPort());
+                disconnectOutput.close();
+                disconnectSocket.close();
+            } catch (IOException e) {
+                System.err.println("Error al enviar mensaje de desconexión a otro middleware: " + e);
+            }
+        }
+
+        // Cierra otras conexiones y realiza cualquier limpieza necesaria.
+        // Luego cierra el servidor y otros recursos.
+
+        try {
+            if (servidor != null) {
+                servidor.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al cerrar el servidor: " + e);
+        }
+
+        // Cierra las conexiones de los middlewares
+        for (Socket middlewareSocket : middlewareSockets) {
+            try {
+                middlewareSocket.close();
+            } catch (IOException e) {
+                System.err.println("Error al cerrar una conexión de middleware: " + e);
+            }
         }
     }
 
@@ -138,67 +182,40 @@ public class MOM {
                         System.out.println("Mensaje recibido: " + temp);
                     } catch (IOException e) {
                         // Error al leer desde el cliente, cierra la conexión y elimina el manejador
-                        System.err.println("Error al leer mensaje del cliente: " + e);
                         clientes.remove(this);
                         socket.close();
                         return;
                     }
 
-                    // Si el mensaje empieza con "MIDDLEWARECONNECTED", revisa si el puerto del middleware ya está en la lista de middlewares conectados, si no, realiza la conexión con ese middleware
                     if (temp.startsWith("MIDDLEWARECONNECTED")) {
                         String[] parts = temp.split(":");
                         int port = Integer.parseInt(parts[1]);
+
                         if (!middlewaresConectados.contains(port)) {
+                            // Realiza la conexión con ese middleware si no está conectado.
                             connectToMiddleware(port);
                         }
+
                         // Agrega el puerto del otro middleware a la lista de middlewares conectados
                         middlewaresConectados.add(port);
                         continue;
-                    } else if (temp.startsWith("RESOLVER")) {
-                        String[] parts = temp.split(",");
-                        int sourcePort = Integer.parseInt(parts[5]);
-                        if (sourcePort == socket.getLocalPort()) {
-                            // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
-                            for (DataOutputStream salidaMiddleware : middlewareSalidas) {
-                                try {
-                                    salidaMiddleware.writeUTF(temp);
-                                    salidaMiddleware.flush(); // Asegura que los datos se envíen de inmediato
-                                } catch (IOException e) {
-                                    // Manejar la excepción si falla el envío a un middleware.
-                                    System.err.println("Error al enviar mensaje a un middleware: " + e);
-                                }
-                            }
-                        }
-                    } else if (temp.startsWith("MOSTRAR")) {
-                        String[] parts = temp.split(",");
-                        int sourcePort = Integer.parseInt(parts[6]);
-                        if (sourcePort == socket.getLocalPort()) {
-                            // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
-                            for (DataOutputStream salidaMiddleware : middlewareSalidas) {
-                                try {
-                                    salidaMiddleware.writeUTF(temp);
-                                    salidaMiddleware.flush(); // Asegura que los datos se envíen de inmediato
-                                } catch (IOException e) {
-                                    // Manejar la excepción si falla el envío a un middleware.
-                                    System.err.println("Error al enviar mensaje a un middleware: " + e);
-                                }
-                            }
-                        }
-                        
+                    } else if (temp.startsWith("DISCONNECT")) {
+                        String[] parts = temp.split(":");
+                        int port = Integer.parseInt(parts[1]);
+                        // Remove the disconnected middleware's port from the list of connected middlewares.
+                        removeDisconnectedMiddleware(port);
                     }
                     for (ManejadorDeClientes client : clientes) {
                         if (client != this) {
                             try {
                                 DataOutputStream clientSalida = new DataOutputStream(client.socket.getOutputStream());
                                 clientSalida.writeUTF(temp);
-                                clientSalida.flush(); // Asegura que los datos se envíen de inmediato
+                                clientSalida.flush();
                             } catch (IOException e) {
-                                // Manejar la excepción si falla el envío a un cliente.
                                 System.err.println("Error al enviar mensaje a un cliente: " + e);
                             }
                         }
                     }
-
                 }
             } catch (IOException e) {
                 System.err.println("Error de E/S en el manejador de clientes: " + e);

@@ -42,7 +42,6 @@ public class Servidor {
         if (!availablePorts.isEmpty()) {
             int randomIndex = new Random().nextInt(availablePorts.size());
             int serverPort = availablePorts.get(randomIndex);
-            availablePorts.remove(randomIndex); // Elimina el puerto usado
             return serverPort;
         }
         return -1; // No hay puertos disponibles
@@ -52,7 +51,7 @@ public class Servidor {
         List<Integer> availablePorts = new ArrayList<>();
         availablePorts.add(12345);
         availablePorts.add(12346);
-        availablePorts.add(12347);// Agrega los puertos disponibles aquí
+        availablePorts.add(12347);
 
         new Servidor(availablePorts);
     }
