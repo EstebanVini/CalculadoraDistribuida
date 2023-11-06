@@ -20,7 +20,6 @@ l cómputo distribuido se ha convertido en una parte fundamental de la computaci
 
 
 
-
 ![alt_text](images/image.png "image_tooltip")
 
 
