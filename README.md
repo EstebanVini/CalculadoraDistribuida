@@ -20,8 +20,7 @@ l cómputo distribuido se ha convertido en una parte fundamental de la computaci
 
 
 
-
-![alt_text](images/image.png "image_tooltip")
+![alt_text](images/image8.png "image_tooltip")
 
 
 Fig 1. Diagrama de arquitectura distribuida y descentralizada del proyecto
@@ -97,7 +96,7 @@ También se implementó un mecanismo de apagado limpio que alerta de la desconex
 
 
 
-![alt_text](images/image7.png "image_tooltip")
+![alt_text](images/image9.png "image_tooltip")
 
 
 Fig 7. Alerta de desconexión inminente
