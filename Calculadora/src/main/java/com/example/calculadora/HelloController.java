@@ -32,6 +32,23 @@ public class HelloController {
 
     int puertoActual = 0;
 
+    String huella = "";
+
+
+    private List<String> colaSuma = new ArrayList<>();
+
+    private List<String> colaResta = new ArrayList<>();
+
+
+    private List<String> colaMultiplicacion = new ArrayList<>();
+
+
+    private List<String> colaDivision = new ArrayList<>();
+
+    private List<String> AcusesDeRecibo = new ArrayList<>();
+
+    private List<String> MensajesEnviados = new ArrayList<>();
+
     private List<Socket> middlewareSockets = new ArrayList<>();
     private List<DataInputStream> middlewareEntradas = new ArrayList<>();
     private List<DataOutputStream> middlewareSalidas = new ArrayList();
@@ -205,15 +222,73 @@ public class HelloController {
 
     @FXML
     void buttonIgual() {
-        String paquetePorMandar = "RESOLVER" + "," + n1 + "," + operacion + "," + n2 + "," + "ORIGEN" + "," + puertoActual;
 
-        System.out.println("Evento " + GenerarHuellaEvento(puertoActual, operacion));
+        String tipoOperacion = "";
+
+        switch (operacion) {
+            case "+":
+                tipoOperacion = "1";
+                break;
+            case "-":
+                tipoOperacion = "2";
+                break;
+            case "*":
+                tipoOperacion = "3";
+                break;
+            case "/":
+                tipoOperacion = "4";
+                break;
+        }
+
+        String huellaEvento = GenerarHuellaEvento(puertoActual, operacion);
+
+        String paquetePorMandar = "RESOLVER;" + tipoOperacion + ";," + n1 + "," + operacion + "," + n2 + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + huellaEvento + "," + "HUELLA," + huella;
+
+        System.out.println(paquetePorMandar);
 
         n1 = "";
         n2 = "";
         operacion = "";
         pantalla.setText("");
 
+        // Si no hay mensajes en la cola del tipo de operación, se envía el mensaje
+        if (tipoOperacion.equals("1") ) {
+            EnviarPaquete(paquetePorMandar);
+            System.out.println("Se ha enviado el paquete: " + paquetePorMandar);
+            MensajesEnviados.add(paquetePorMandar);
+        } else if (tipoOperacion.equals("2") && colaResta.isEmpty()) {
+            EnviarPaquete(paquetePorMandar);
+            System.out.println("Se ha enviado el paquete: " + paquetePorMandar);
+            MensajesEnviados.add(paquetePorMandar);
+        } else if (tipoOperacion.equals("3") && colaMultiplicacion.isEmpty()) {
+            EnviarPaquete(paquetePorMandar);
+            System.out.println("Se ha enviado el paquete: " + paquetePorMandar);
+            MensajesEnviados.add(paquetePorMandar);
+        } else if (tipoOperacion.equals("4") && colaDivision.isEmpty()) {
+            EnviarPaquete(paquetePorMandar);
+            System.out.println("Se ha enviado el paquete: " + paquetePorMandar);
+            MensajesEnviados.add(paquetePorMandar);
+        } else {
+            //Encolar el paquete en la cola correspondiente
+            switch (tipoOperacion) {
+                case "1":
+                    colaSuma.add(paquetePorMandar);
+                    break;
+                case "2":
+                    colaResta.add(paquetePorMandar);
+                    break;
+                case "3":
+                    colaMultiplicacion.add(paquetePorMandar);
+                    break;
+                case "4":
+                    colaDivision.add(paquetePorMandar);
+                    break;
+            }
+        }
+
+    }
+
+    void EnviarPaquete(String paquetePorMandar){
         try {
             if (!middlewareSalidas.isEmpty()) {
                 DataOutputStream salida = middlewareSalidas.get(random.nextInt(middlewareSalidas.size()));
@@ -224,6 +299,75 @@ public class HelloController {
         } catch (IOException error) {
             System.out.println(error);
         }
+    }
+
+    void ResolverCola(int cantidadMinimaServidores, String AcuseDeRecibo){
+
+        String[] paquete = AcuseDeRecibo.split(",");
+        String huellaEvento = paquete[1];
+        System.out.println("Huella de evento del acuse de recibo: " + huellaEvento);
+        String huellaOrigen = paquete[2];
+
+        int CantidadDeAcuses = 1;
+        // Verificar las huellas de evento de los acuses de recibo guardados anteriormente
+        for (int i = 0; i < AcusesDeRecibo.size(); i++) {
+            String[] paqueteAcuse = AcusesDeRecibo.get(i).split(",");
+            String huellaEventoAcuse = paqueteAcuse[1];
+            String huellaOrigenAcuse = paqueteAcuse[2];
+            if (huellaEvento.equals(huellaEventoAcuse) && !huellaOrigen.equals(huellaOrigenAcuse)) {
+                CantidadDeAcuses++;
+            }
+        }
+
+        AcusesDeRecibo.add(AcuseDeRecibo);
+
+
+        if (CantidadDeAcuses >= cantidadMinimaServidores) {
+
+
+            // Verificar las huellas de evento de los mensajes enviados guardados anteriormente
+            for (int i = 0; i < MensajesEnviados.size(); i++) {
+                String[] paqueteMensaje = MensajesEnviados.get(i).split(",");
+                String huellaEventoMensaje = paqueteMensaje[7];
+                System.out.println("Huella de evento del mensaje: " + huellaEventoMensaje);
+                String TipoOperacion = paqueteMensaje[0].split(";")[1];
+                System.out.println("Tipo de operación: " + TipoOperacion);
+
+                if (huellaEvento.equals(huellaEventoMensaje)) {
+                    try {
+                        switch (TipoOperacion) {
+                            case "1":
+                                EnviarPaquete(colaSuma.get(0));
+                                System.out.println("Se ha enviado el paquete: " + colaSuma.get(0));
+                                colaSuma.remove(0);
+                                MensajesEnviados.add(colaSuma.get(0));
+                                break;
+                            case "2":
+                                EnviarPaquete(colaResta.get(0));
+                                colaResta.remove(0);
+                                MensajesEnviados.add(colaResta.get(0));
+                                break;
+                            case "3":
+                                EnviarPaquete(colaMultiplicacion.get(0));
+                                colaMultiplicacion.remove(0);
+                                MensajesEnviados.add(colaMultiplicacion.get(0));
+                                break;
+                            case "4":
+                                EnviarPaquete(colaDivision.get(0));
+                                colaDivision.remove(0);
+                                MensajesEnviados.add(colaDivision.get(0));
+                                break;
+                        }
+
+                    }
+                    catch (IndexOutOfBoundsException e){
+                        System.out.println("No hay mensajes en la cola");
+                    }
+
+                }
+            }
+        }
+
     }
 
     public String GenerarHuella(int puerto) {
@@ -285,6 +429,18 @@ public class HelloController {
         availablePorts.add(12346);
         availablePorts.add(12347);
 
+        //para hacer pruebas agregaremos 5 mensajes a la cola de suma
+        colaSuma.add("RESOLVER;1;," + "1" + "," + "+" + "," + "1" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + GenerarHuellaEvento(puertoActual, "+") + "," + "HUELLA," + huella);
+        colaSuma.add("RESOLVER;1;," + "2" + "," + "+" + "," + "2" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + GenerarHuellaEvento(puertoActual, "+") + "," + "HUELLA," + huella);
+        colaSuma.add("RESOLVER;1;," + "3" + "," + "+" + "," + "3" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + GenerarHuellaEvento(puertoActual, "+") + "," + "HUELLA," + huella);
+        colaSuma.add("RESOLVER;1;," + "4" + "," + "+" + "," + "4" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + GenerarHuellaEvento(puertoActual, "+") + "," + "HUELLA," + huella);
+        colaSuma.add("RESOLVER;1;," + "5" + "," + "+" + "," + "5" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + GenerarHuellaEvento(puertoActual, "+") + "," + "HUELLA," + huella);
+
+        // imprimimos la cola de suma
+        System.out.println("Cola de suma:");
+        for (int i = 0; i < colaSuma.size(); i++) {
+            System.out.println(colaSuma.get(i));
+        }
         Thread socketThread = new Thread(() -> {
             while (true) {
                 int port = getRandomPort(availablePorts);
@@ -306,7 +462,7 @@ public class HelloController {
 
                     puertoActual = port;
 
-                    String huella = GenerarHuella(puertoActual);
+                    huella = GenerarHuella(puertoActual);
                     System.out.println("Huella digital: " + huella);
 
                     while (true) {
@@ -329,6 +485,10 @@ public class HelloController {
                                     historial.getChildren().add(label);
                                 });
                             }
+                        }
+                        else if (temp.startsWith("ACK")) {
+                            System.out.println("Acuse de recibo recibido: " + temp);
+                            ResolverCola(1, temp);
                         }
                     }
                 } catch (IOException e) {

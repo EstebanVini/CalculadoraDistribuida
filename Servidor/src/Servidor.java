@@ -16,6 +16,10 @@ public class Servidor {
 
     int resultado;
 
+    String huella;
+
+    List<String> Cola = new ArrayList<String>();
+
     public String GenerarHuella(int puerto) {
         try {
             LocalDateTime now = LocalDateTime.now();
@@ -56,11 +60,11 @@ public class Servidor {
                 entrada = new DataInputStream(System.in);
                 salida = new DataOutputStream(socket.getOutputStream());
 
+                huella = GenerarHuella(serverPort);
+                System.out.println("Huella digital: " + huella);
+
                 Thread thread = new Thread(new Mensajes());
                 thread.start();
-
-                String huella = GenerarHuella(serverPort);
-                System.out.println("Huella digital: " + huella);
 
                 System.out.println("Conexión establecida con middleware en el puerto " + serverPort);
                 // Esperar a que la conexión se cierre antes de intentar una nueva conexión
@@ -97,8 +101,26 @@ public class Servidor {
 
                 while (true) {
                     String mensaje = entrada.readUTF();
+
                     String[] paquete = mensaje.split(",");
                     String[] Origen = new String[]{paquete[5]};
+
+                    System.out.println("Origen: " + Origen[0]);
+
+                    if (paquete[0].startsWith("ACK")){
+                        System.out.println("ACK");
+                    }else {
+                        try {
+                            String acuseRecibo = "ACK," + paquete[7] + "," + huella + "," + Origen[0];
+                            salida.writeUTF(acuseRecibo);
+                        } catch (IOException error) {
+                            System.out.println("No se pudo enviar el acuse de recibo.");
+                        }
+
+
+                    }
+
+
                     int result = 0;
                     if (paquete[0].startsWith("RESOLVER")) {
                         if (Objects.equals(paquete[2], "+")) {
@@ -117,7 +139,7 @@ public class Servidor {
                             result = Integer.parseInt(paquete[1]) / Integer.parseInt(paquete[3]);
                         }
 
-                        String respuesta = "MOSTRAR," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + "ORIGEN" + "," + Origen[0];
+                        String respuesta = "MOSTRAR," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0];
 
                         salida.writeUTF(respuesta);
                     }

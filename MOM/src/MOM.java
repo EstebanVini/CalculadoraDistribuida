@@ -2,7 +2,8 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class MOM {
+public class
+MOM {
     private List<Integer> puertosDisponibles;
     private List<Socket> middlewareSockets;
     private List<DataOutputStream> middlewareSalidas;
@@ -224,7 +225,22 @@ public class MOM {
                         }
                     } else if (temp.startsWith("MOSTRAR")) {
                         String[] parts = temp.split(",");
-                        int sourcePort = Integer.parseInt(parts[6]);
+                        int sourcePort = Integer.parseInt(parts[5]);
+                        if (sourcePort == socket.getLocalPort()) {
+                            // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
+                            for (DataOutputStream salidaMiddleware : middlewareSalidas) {
+                                try {
+                                    salidaMiddleware.writeUTF(temp);
+                                    salidaMiddleware.flush(); // Asegura que los datos se envíen de inmediato
+                                } catch (IOException e) {
+                                    // Manejar la excepción si falla el envío a un middleware.
+                                    System.err.println("Error al enviar mensaje a un middleware: " + e);
+                                }
+                            }
+                        }
+                    } else if (temp.startsWith("ACK")) {
+                        String[] parts = temp.split(",");
+                        int sourcePort = Integer.parseInt(parts[3]);
                         if (sourcePort == socket.getLocalPort()) {
                             // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
                             for (DataOutputStream salidaMiddleware : middlewareSalidas) {
@@ -238,6 +254,7 @@ public class MOM {
                             }
                         }
                     }
+
                     for (ManejadorDeClientes client : clientes) {
                         if (client != this) {
                             try {
