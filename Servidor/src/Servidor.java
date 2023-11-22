@@ -1,5 +1,9 @@
 import java.io.*;
 import java.net.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.List;
 import java.util.ArrayList;
@@ -11,6 +15,32 @@ public class Servidor {
     DataOutputStream salida;
 
     int resultado;
+
+    public String GenerarHuella(int puerto) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+            String formattedDateTime = now.format(formatter);
+
+            // Utiliza el puerto y la fecha actual para generar una huella digital
+            String huellaRaw = formattedDateTime + puerto;
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(huellaRaw.getBytes());
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte hashByte : hashBytes) {
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public Servidor(List<Integer> availablePorts) {
         while (true) {
@@ -28,6 +58,9 @@ public class Servidor {
 
                 Thread thread = new Thread(new Mensajes());
                 thread.start();
+
+                String huella = GenerarHuella(serverPort);
+                System.out.println("Huella digital: " + huella);
 
                 System.out.println("Conexión establecida con middleware en el puerto " + serverPort);
                 // Esperar a que la conexión se cierre antes de intentar una nueva conexión

@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class HelloController {
     @FXML
     Label pantalla;
@@ -221,6 +226,32 @@ public class HelloController {
         }
     }
 
+    public String GenerarHuella(int puerto) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+            String formattedDateTime = now.format(formatter);
+
+            // Utiliza el puerto y la fecha actual para generar una huella digital
+            String huellaRaw = formattedDateTime + puerto;
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(huellaRaw.getBytes());
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte hashByte : hashBytes) {
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public void initialize() {
         availablePorts.add(12345);
@@ -247,6 +278,9 @@ public class HelloController {
                     System.out.println("Conexión establecida con middleware en el puerto " + port);
 
                     puertoActual = port;
+
+                    String huella = GenerarHuella(puertoActual);
+                    System.out.println("Huella digital: " + huella);
 
                     while (true) {
                         temp = entrada.readUTF();
