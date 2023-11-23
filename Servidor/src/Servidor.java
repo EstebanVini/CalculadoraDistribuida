@@ -101,28 +101,23 @@ public class Servidor {
 
                 while (true) {
                     String mensaje = entrada.readUTF();
+                    System.out.println("Mensaje recibido: " + mensaje);
 
                     String[] paquete = mensaje.split(",");
-                    String[] Origen = new String[]{paquete[5]};
 
-                    System.out.println("Origen: " + Origen[0]);
 
-                    if (paquete[0].startsWith("ACK")){
-                        System.out.println("ACK");
-                    }else {
+
+                    int result = 0;
+                    if (paquete[0].startsWith("RESOLVER")) {
+                        String[] Origen = new String[]{paquete[5]};
+
+                        System.out.println("Origen: " + Origen[0]);
                         try {
                             String acuseRecibo = "ACK," + paquete[7] + "," + huella + "," + Origen[0];
                             salida.writeUTF(acuseRecibo);
                         } catch (IOException error) {
                             System.out.println("No se pudo enviar el acuse de recibo.");
                         }
-
-
-                    }
-
-
-                    int result = 0;
-                    if (paquete[0].startsWith("RESOLVER")) {
                         if (Objects.equals(paquete[2], "+")) {
                             result = Integer.parseInt(paquete[1]) + Integer.parseInt(paquete[3]);
                         }
