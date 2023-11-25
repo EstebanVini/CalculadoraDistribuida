@@ -113,7 +113,7 @@ public class Servidor {
 
                         System.out.println("Origen: " + Origen[0]);
                         try {
-                            String acuseRecibo = "ACK," + paquete[7] + "," + huella + "," + Origen[0];
+                            String acuseRecibo = "ACK;99;," + paquete[7] + "," + huella + "," + Origen[0];
                             salida.writeUTF(acuseRecibo);
                         } catch (IOException error) {
                             System.out.println("No se pudo enviar el acuse de recibo.");
@@ -134,7 +134,7 @@ public class Servidor {
                             result = Integer.parseInt(paquete[1]) / Integer.parseInt(paquete[3]);
                         }
 
-                        String respuesta = "MOSTRAR," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0];
+                        String respuesta = "MOSTRAR;99;," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0] + "," + paquete[7]+ "," + paquete[9];
 
                         salida.writeUTF(respuesta);
                     }

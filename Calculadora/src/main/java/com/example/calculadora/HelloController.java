@@ -435,6 +435,18 @@ public class HelloController {
         }
     }
 
+    public boolean VerificarHuella(String huellaEvento, String huella) {
+        for (String mensajeEnviado : MensajesEnviados) {
+            if (mensajeEnviado.contains(huellaEvento)) {
+                String huellaDigital = mensajeEnviado.split(",")[9];
+                if (huellaDigital.equals(huella)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
 
 
@@ -535,21 +547,26 @@ public class HelloController {
                         temp = entrada.readUTF();
                         String messageParts[] = temp.split(",");
                         if (temp.startsWith("MOSTRAR")) {
-                            String resultado = messageParts[1] + " " + messageParts[2] + " " + messageParts[3] + " = " + messageParts[4];
-                            if (!historialResultados.isEmpty()) {
-                                if (!resultado.equals(historialResultados.get(historialResultados.size() - 1))) {
+                            // comprobar si la huella del evento recibido está en la lista de mensajes enviados, si está, mostrar el resultado, si no, descartar el mensaje
+                            String huellaEvento = messageParts[1];
+
+                            if (VerificarHuella(huellaEvento, huella)) {
+                                String resultado = messageParts[2] + " " + messageParts[3] + " " + messageParts[4] + " = " + messageParts[5];
+                                if (!historialResultados.isEmpty()) {
+                                    if (!resultado.equals(historialResultados.get(historialResultados.size() - 1))) {
+                                        historialResultados.add(resultado);
+                                        Platform.runLater(() -> {
+                                            Label label = new Label(resultado);
+                                            historial.getChildren().add(label);
+                                        });
+                                    }
+                                } else {
                                     historialResultados.add(resultado);
                                     Platform.runLater(() -> {
                                         Label label = new Label(resultado);
                                         historial.getChildren().add(label);
                                     });
                                 }
-                            } else {
-                                historialResultados.add(resultado);
-                                Platform.runLater(() -> {
-                                    Label label = new Label(resultado);
-                                    historial.getChildren().add(label);
-                                });
                             }
                         }
                         else if (temp.startsWith("ACK")) {
