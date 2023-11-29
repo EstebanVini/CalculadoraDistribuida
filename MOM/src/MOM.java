@@ -253,6 +253,21 @@ MOM {
                                 }
                             }
                         }
+                    } else if (temp.startsWith("Cambio de tipo de operacion")) {
+                        String[] parts = temp.split(",");
+                        int sourcePort = Integer.parseInt(parts[3]);
+                        if (sourcePort == socket.getLocalPort()) {
+                            // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
+                            for (DataOutputStream salidaMiddleware : middlewareSalidas) {
+                                try {
+                                    salidaMiddleware.writeUTF(temp);
+                                    salidaMiddleware.flush(); // Asegura que los datos se envíen de inmediato
+                                } catch (IOException e) {
+                                    // Manejar la excepción si falla el envío a un middleware.
+                                    System.err.println("Error al enviar mensaje a un middleware: " + e);
+                                }
+                            }
+                        }
                     }
 
                     for (ManejadorDeClientes client : clientes) {
