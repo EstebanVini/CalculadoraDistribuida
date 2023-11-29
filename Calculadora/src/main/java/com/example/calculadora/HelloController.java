@@ -56,13 +56,7 @@ public class HelloController {
 
     private List<String> AcusesDeRecibo = new ArrayList<>();
 
-    private List<String> MensajesEnviadosSuma = new ArrayList<>();
-
-    private List<String> MensajesEnviadosResta = new ArrayList<>();
-
-    private List<String> MensajesEnviadosMultiplicacion = new ArrayList<>();
-
-    private List<String> MensajesEnviadosDivision = new ArrayList<>();
+    private List<String> MensajesDePrueba = new ArrayList<>();
 
     private List<String> MensajesEnviados = new ArrayList<>();
 
@@ -75,166 +69,136 @@ public class HelloController {
 
     @FXML
     void button0() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "0";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "0";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button1() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "1";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "1";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button2() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "2";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "2";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button3() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "3";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "3";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button4() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "4";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "4";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button5() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "5";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "5";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button6() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "6";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "6";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button7() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "7";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "7";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button8() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "8";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "8";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void button9() {
-        if(operacion.isEmpty())
-        {
+        if (operacion.isEmpty()) {
             n1 += "9";
             pantalla.setText(n1);
-        }
-        else
-        {
+        } else {
             n2 += "9";
-            pantalla.setText(n1+operacion+n2);
+            pantalla.setText(n1 + operacion + n2);
         }
     }
 
     @FXML
     void buttonSuma() {
         operacion = "+";
-        pantalla.setText(n1+operacion);
+        pantalla.setText(n1 + operacion);
     }
 
     @FXML
     void buttonResta() {
         operacion = "-";
-        pantalla.setText(n1+operacion);
+        pantalla.setText(n1 + operacion);
     }
 
     @FXML
     void buttonMultiplicacion() {
         operacion = "*";
-        pantalla.setText(n1+operacion);
+        pantalla.setText(n1 + operacion);
     }
 
     @FXML
     void buttonDivision() {
         operacion = "/";
-        pantalla.setText(n1+operacion);
+        pantalla.setText(n1 + operacion);
     }
 
     @FXML
@@ -249,22 +213,19 @@ public class HelloController {
         n2 = "";
         operacion = "";
         pantalla.setText("");
+        // Verificar si hay servidores disponibles para enviar el mensaje
+
+        VerificarServidoresActivos(tipoOperacion);
 
         // Si no hay mensajes enviados, se envía el mensaje
-        if (MensajesEnviados.isEmpty()) {
-            EnviarPaquete(paquetePorMandar);
-            MensajesEnviados.add(paquetePorMandar);
-            System.out.println("Se ha enviado el paquete: " + paquetePorMandar);
-        }
-        else  {
-            switch (tipoOperacion){
+
+            switch (tipoOperacion) {
                 case "1":
                     if (ServidoresSumaDisponibles) {
                         EnviarPaquete(paquetePorMandar);
                         MensajesEnviados.add(paquetePorMandar);
                         System.out.println("Se ha enviado el paquete:: " + paquetePorMandar);
-                    }
-                    else {
+                    } else {
                         encolarMensaje(paquetePorMandar, tipoOperacion);
                         System.out.println("Se ha encolado el paquete: " + paquetePorMandar);
                     }
@@ -274,8 +235,7 @@ public class HelloController {
                         EnviarPaquete(paquetePorMandar);
                         MensajesEnviados.add(paquetePorMandar);
                         System.out.println("Se ha enviado el paquete: " + paquetePorMandar);
-                    }
-                    else {
+                    } else {
                         encolarMensaje(paquetePorMandar, tipoOperacion);
                         System.out.println("Se ha encolado el paquete: " + paquetePorMandar);
                     }
@@ -285,8 +245,7 @@ public class HelloController {
                         EnviarPaquete(paquetePorMandar);
                         MensajesEnviados.add(paquetePorMandar);
                         System.out.println("Se ha encolado el paquete: " + paquetePorMandar);
-                    }
-                    else {
+                    } else {
                         encolarMensaje(paquetePorMandar, tipoOperacion);
                         System.out.println("Se ha encolado el paquete: " + paquetePorMandar);
                     }
@@ -296,8 +255,7 @@ public class HelloController {
                         EnviarPaquete(paquetePorMandar);
                         MensajesEnviados.add(paquetePorMandar);
                         System.out.println("Se ha encolado el paquete " + paquetePorMandar);
-                    }
-                    else {
+                    } else {
                         encolarMensaje(paquetePorMandar, tipoOperacion);
                         System.out.println("Se ha encolado el paquete: " + paquetePorMandar);
                     }
@@ -306,8 +264,6 @@ public class HelloController {
             }
         }
 
-
-    }
 
     private String determinarTipoOperacion() {
         switch (operacion) {
@@ -342,7 +298,7 @@ public class HelloController {
     }
 
 
-    void EnviarPaquete(String paquetePorMandar){
+    void EnviarPaquete(String paquetePorMandar) {
         try {
             if (!middlewareSalidas.isEmpty()) {
                 DataOutputStream salida = middlewareSalidas.get(random.nextInt(middlewareSalidas.size()));
@@ -362,9 +318,9 @@ public class HelloController {
         String huellaAcuseRecibo = AcuseDeRecibo.split(",")[2];
 
         // Verificar si hay más acuses de recibo con la misma huella de evento pero diferente huella digital
-        int CantidadSercidores = 1;
+        int CantidadSercidores = 0;
         for (String acuseDeRecibo : AcusesDeRecibo) {
-            if (acuseDeRecibo.split(",")[1].equals(huellaEventoAcuseRecibo) ) {
+            if (acuseDeRecibo.split(",")[1].equals(huellaEventoAcuseRecibo)) {
                 CantidadSercidores++;
             }
         }
@@ -391,6 +347,12 @@ public class HelloController {
                         EnviarPaquete(mensaje);
                         MensajesEnviados.add(mensaje);
                         System.out.println("Se ha enviado el paquete: " + mensaje);
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 case "2":
@@ -401,6 +363,13 @@ public class HelloController {
                         EnviarPaquete(mensaje);
                         MensajesEnviados.add(mensaje);
                         System.out.println("Se ha enviado el paquete: " + mensaje);
+
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 case "3":
@@ -411,6 +380,13 @@ public class HelloController {
                         EnviarPaquete(mensaje);
                         MensajesEnviados.add(mensaje);
                         System.out.println("Se ha enviado el paquete: " + mensaje);
+
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 case "4":
@@ -421,11 +397,18 @@ public class HelloController {
                         EnviarPaquete(mensaje);
                         MensajesEnviados.add(mensaje);
                         System.out.println("Se ha enviado el paquete: " + mensaje);
+
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
             }
 
-        }else {
+        } else {
             switch (tipoOperacion) {
                 case "1" -> ServidoresSumaDisponibles = false;
                 case "2" -> ServidoresRestaDisponibles = false;
@@ -446,6 +429,99 @@ public class HelloController {
         }
         return false;
     }
+
+    public void  VerificarServidoresActivos(String tipoOperacion) {
+
+        // Mandar un mensaje de prueba a todos los servidores disponibles para verificar si están activos y guardar los mensajes de prueba en una lista
+        switch (tipoOperacion) {
+            case "1":
+                for (DataOutputStream salida : middlewareSalidas) {
+                    try {
+                        String huellaEvento = GenerarHuellaEvento(puertoActual, "+");
+                        String mensaje = "RESOLVER;1;," + "1" + "," + "+" + "," + "1" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + huellaEvento + "," + "HUELLA," + huella;
+                        salida.writeUTF(mensaje);
+                        MensajesDePrueba.add(mensaje);
+                        MensajesEnviados.add(mensaje);
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(80);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (IOException error) {
+                        System.out.println("No se pudo enviar el mensaje de prueba.");
+                    }
+                }
+                break;
+            case "2":
+                for (DataOutputStream salida : middlewareSalidas) {
+                    try {
+                        String huellaEvento = GenerarHuellaEvento(puertoActual, "-");
+                        String mensaje = "RESOLVER;2;," + "1" + "," + "-" + "," + "1" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + huellaEvento + "," + "HUELLA," + huella;
+                        salida.writeUTF(mensaje);
+                        MensajesDePrueba.add(mensaje);
+                        MensajesEnviados.add(mensaje);
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (IOException error) {
+                        System.out.println("No se pudo enviar el mensaje de prueba.");
+                    }
+                }
+                break;
+            case "3":
+                for (DataOutputStream salida : middlewareSalidas) {
+                    try {
+                        String huellaEvento = GenerarHuellaEvento(puertoActual, "*");
+                        String mensaje = "RESOLVER;3;," + "1" + "," + "*" + "," + "1" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + huellaEvento + "," + "HUELLA," + huella;
+                        salida.writeUTF(mensaje);
+                        MensajesDePrueba.add(mensaje);
+                        MensajesEnviados.add(mensaje);
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (IOException error) {
+                        System.out.println("No se pudo enviar el mensaje de prueba.");
+                    }
+                }
+                break;
+            case "4":
+                for (DataOutputStream salida : middlewareSalidas) {
+                    try {
+                        String huellaEvento = GenerarHuellaEvento(puertoActual, "/");
+                        String mensaje = "RESOLVER;4;," + "1" + "," + "/" + "," + "1" + "," + "PUERTOORIGEN," + puertoActual + "," + "EVENTO," + huellaEvento + "," + "HUELLA," + huella;
+                        salida.writeUTF(mensaje);
+                        MensajesDePrueba.add(mensaje);
+                        MensajesEnviados.add(mensaje);
+                        // Esperar 20 ms para que el servidor pueda recibir el mensaje
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (IOException error) {
+                        System.out.println("No se pudo enviar el mensaje de prueba.");
+                    }
+                }
+                break;
+        }
+    }
+
+    public boolean VerificarMensajeDePrueba(String huellaEvento) {
+        for (String mensajeDePrueba : MensajesDePrueba) {
+            if (mensajeDePrueba.contains(huellaEvento)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 
@@ -547,11 +623,10 @@ public class HelloController {
                         temp = entrada.readUTF();
                         String messageParts[] = temp.split(",");
                         if (temp.startsWith("MOSTRAR")) {
-                            // comprobar si la huella del evento recibido está en la lista de mensajes enviados, si está, mostrar el resultado, si no, descartar el mensaje
-                            String huellaEvento = messageParts[1];
-
-                            if (VerificarHuella(huellaEvento, huella)) {
-                                String resultado = messageParts[2] + " " + messageParts[3] + " " + messageParts[4] + " = " + messageParts[5];
+                            String huellaEvento = messageParts[6];
+                            if (!VerificarMensajeDePrueba(huellaEvento)) {
+                                System.out.println(temp + "\n");
+                                String resultado = messageParts[1] + " " + messageParts[2] + " " + messageParts[3] + " = " + messageParts[4];
                                 if (!historialResultados.isEmpty()) {
                                     if (!resultado.equals(historialResultados.get(historialResultados.size() - 1))) {
                                         historialResultados.add(resultado);
@@ -569,9 +644,15 @@ public class HelloController {
                                 }
                             }
                         }
+
+
                         else if (temp.startsWith("ACK")) {
                             AcusesDeRecibo.add(temp);
-                            System.out.println("Acuse de recibo recibido: " + temp);
+                            // si la huella del evento es de un mensaje de prueba, no se hace nada
+                            String huellaEvento = messageParts[1];
+                            if (!VerificarMensajeDePrueba(huellaEvento)) {
+                                System.out.println("Acuse de recibo recibido: " + temp + "\n");
+                            }
                             ResolverCola(2, temp);
                         }
                     }

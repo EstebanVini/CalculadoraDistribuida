@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="599f9da5-e3cd-446f-91a3-b2422e2bdeb8" name="Changes" comment="Entrega 2" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2VZemoPxAXMcwldYYvk2L78jgfL" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/skips/OneDrive - up.edu.mx/UP 7mo semestre/Cómputo distribuído/CalculadoraDistribuida/Servidor&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/rrobe/Desktop/Esteban/MOM/src/Main.java&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="599f9da5-e3cd-446f-91a3-b2422e2bdeb8" name="Changes" comment="" />
+      <created>1695048191481</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1695048191481</updated>
+      <workItem from="1695048192465" duration="1505000" />
+      <workItem from="1695055082711" duration="2805000" />
+      <workItem from="1695318874099" duration="119000" />
+      <workItem from="1698512798489" duration="2443000" />
+      <workItem from="1698603005435" duration="15595000" />
+      <workItem from="1698636097562" duration="4943000" />
+      <workItem from="1698808521046" duration="11029000" />
+      <workItem from="1698844880793" duration="488000" />
+      <workItem from="1698847491746" duration="490000" />
+      <workItem from="1698856709192" duration="6085000" />
+      <workItem from="1698863702144" duration="65000" />
+      <workItem from="1700628817702" duration="1050000" />
+      <workItem from="1700632142183" duration="6403000" />
+    </task>
+    <task id="LOCAL-00001" summary="Maneja desconexión de nodos">
+      <option name="closed" value="true" />
+      <created>1698861361490</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1698861361490</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Ahora si ya funciona bien">
+      <option name="closed" value="true" />
+      <created>1698862125159</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1698862125159</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Entrega 2">
+      <option name="closed" value="true" />
+      <created>1698863727095</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1698863727095</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Maneja desconexión de nodos" />
+    <MESSAGE value="Ahora si ya funciona bien" />
+    <MESSAGE value="Entrega 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Entrega 2" />
+  </component>
+</project>

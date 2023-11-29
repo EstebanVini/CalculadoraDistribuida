@@ -17,6 +17,7 @@ public class Servidor {
     int resultado;
 
     String huella;
+    String Tipo;
 
     List<String> Cola = new ArrayList<String>();
 
@@ -46,7 +47,7 @@ public class Servidor {
         }
     }
 
-    public Servidor(List<Integer> availablePorts) {
+    public Servidor(List<Integer> availablePorts, String Tipo) {
         while (true) {
             int serverPort = getRandomPort(availablePorts);
             if (serverPort == -1) {
@@ -59,6 +60,8 @@ public class Servidor {
 
                 entrada = new DataInputStream(System.in);
                 salida = new DataOutputStream(socket.getOutputStream());
+
+                System.out.println("Servidor de tipo: " + Tipo);
 
                 huella = GenerarHuella(serverPort);
                 System.out.println("Huella digital: " + huella);
@@ -90,7 +93,19 @@ public class Servidor {
         availablePorts.add(12346);
         availablePorts.add(12347);
 
-        new Servidor(availablePorts);
+        List<String> Operaciones = new ArrayList<String>();
+        Operaciones.add("SUMA");
+        Operaciones.add("RESTA");
+        Operaciones.add("MULTIPLICACION");
+        Operaciones.add("DIVISION");
+
+        // Seleccionar un tipo de operación al azar
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(Operaciones.size());
+        String Tipo = Operaciones.get(randomIndex);
+
+
+        new Servidor(availablePorts, Tipo);
     }
 
     private class Mensajes implements Runnable {
@@ -101,36 +116,31 @@ public class Servidor {
 
                 while (true) {
                     String mensaje = entrada.readUTF();
-                    System.out.println("Mensaje recibido: " + mensaje);
-
                     String[] paquete = mensaje.split(",");
-
-
 
                     int result = 0;
                     if (paquete[0].startsWith("RESOLVER")) {
+                        System.out.println("Operación recibida: " + mensaje);
                         String[] Origen = new String[]{paquete[5]};
-
-                        System.out.println("Origen: " + Origen[0]);
                         try {
-                            String acuseRecibo = "ACK;99;," + paquete[7] + "," + huella + "," + Origen[0];
+                            String acuseRecibo = "ACK;69;," + paquete[7] + "," + huella + "," + Origen[0];
                             salida.writeUTF(acuseRecibo);
                         } catch (IOException error) {
                             System.out.println("No se pudo enviar el acuse de recibo.");
                         }
-                        if (Objects.equals(paquete[2], "+")) {
+                        if (Objects.equals(paquete[2], "+") && Objects.equals(Tipo, "SUMA")) {
                             result = Integer.parseInt(paquete[1]) + Integer.parseInt(paquete[3]);
                         }
 
-                        if (Objects.equals(paquete[2], "-")) {
+                        if (Objects.equals(paquete[2], "-") && Objects.equals(Tipo, "RESTA")) {
                             result = Integer.parseInt(paquete[1]) - Integer.parseInt(paquete[3]);
                         }
 
-                        if (Objects.equals(paquete[2], "*")) {
+                        if (Objects.equals(paquete[2], "*") && Objects.equals(Tipo, "MULTIPLICACION")) {
                             result = Integer.parseInt(paquete[1]) * Integer.parseInt(paquete[3]);
                         }
 
-                        if (Objects.equals(paquete[2], "/")) {
+                        if (Objects.equals(paquete[2], "/") && Objects.equals(Tipo, "DIVISION")) {
                             result = Integer.parseInt(paquete[1]) / Integer.parseInt(paquete[3]);
                         }
 
