@@ -17,7 +17,7 @@ public class Servidor {
     int resultado;
 
     String huella;
-    String Tipo;
+    static String Tipo;
 
     List<String> Cola = new ArrayList<String>();
 
@@ -56,7 +56,7 @@ public class Servidor {
             }
 
             try {
-                socket = new Socket("127.0.0.1", serverPort);
+                socket = new Socket("127.0.0.1", 12345);
 
                 entrada = new DataInputStream(System.in);
                 salida = new DataOutputStream(socket.getOutputStream());
@@ -69,7 +69,7 @@ public class Servidor {
                 Thread thread = new Thread(new Mensajes());
                 thread.start();
 
-                System.out.println("Conexión establecida con middleware en el puerto " + serverPort);
+                System.out.println("Conexión establecida con middleware en el puerto " + getRandomPort(availablePorts));
                 // Esperar a que la conexión se cierre antes de intentar una nueva conexión
                 thread.join();
             } catch (IOException | InterruptedException error) {
@@ -90,7 +90,6 @@ public class Servidor {
     public static void main(String[] args) {
         List<Integer> availablePorts = new ArrayList<>();
         availablePorts.add(12345);
-        availablePorts.add(12346);
         availablePorts.add(12347);
 
         List<String> Operaciones = new ArrayList<String>();
@@ -99,10 +98,11 @@ public class Servidor {
         Operaciones.add("MULTIPLICACION");
         Operaciones.add("DIVISION");
 
+
         // Seleccionar un tipo de operación al azar
         Random rand = new Random();
         int randomIndex = rand.nextInt(Operaciones.size());
-        String Tipo = Operaciones.get(randomIndex);
+        Tipo = Operaciones.get(randomIndex);
 
 
         new Servidor(availablePorts, Tipo);
@@ -122,18 +122,25 @@ public class Servidor {
                     if (paquete[0].startsWith("RESOLVER")) {
                         System.out.println("Operación recibida: " + mensaje);
                         String[] Origen = new String[]{paquete[5]};
+                        if (Objects.equals(paquete[2], "+")) {
+                            if (Objects.equals(Tipo, "SUMA")) {
+                                try {
+                                    String acuseRecibo = "ACK;69;," + paquete[7] + "," + huella + "," + Origen[0];
+                                    salida.writeUTF(acuseRecibo);
+                                } catch (IOException error) {
+                                    System.out.println("No se pudo enviar el acuse de recibo.");
+                                }
+                                result = Integer.parseInt(paquete[1]) + Integer.parseInt(paquete[3]);
+                                String respuesta = "MOSTRAR;99;," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0] + "," + paquete[7] + "," + paquete[9];
 
-                        if (Objects.equals(paquete[2], "+") && Objects.equals(Tipo, "SUMA")) {
-                            try {
-                                String acuseRecibo = "ACK;69;," + paquete[7] + "," + huella + "," + Origen[0];
-                                salida.writeUTF(acuseRecibo);
-                            } catch (IOException error) {
-                                System.out.println("No se pudo enviar el acuse de recibo.");
+                                salida.writeUTF(respuesta);
+                            } else {
+                                Cola.add(mensaje);
+                                System.out.println("Operación en cola: " + mensaje);
                             }
-                            result = Integer.parseInt(paquete[1]) + Integer.parseInt(paquete[3]);
                         }
 
-                        if (Objects.equals(paquete[2], "-") && Objects.equals(Tipo, "RESTA")) {
+                        else if (Objects.equals(paquete[2], "-") && Objects.equals(Tipo, "RESTA")) {
                             try {
                                 String acuseRecibo = "ACK;69;," + paquete[7] + "," + huella + "," + Origen[0];
                                 salida.writeUTF(acuseRecibo);
@@ -141,9 +148,12 @@ public class Servidor {
                                 System.out.println("No se pudo enviar el acuse de recibo.");
                             }
                             result = Integer.parseInt(paquete[1]) - Integer.parseInt(paquete[3]);
+                            String respuesta = "MOSTRAR;99;," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0] + "," + paquete[7]+ "," + paquete[9];
+
+                            salida.writeUTF(respuesta);
                         }
 
-                        if (Objects.equals(paquete[2], "*") && Objects.equals(Tipo, "MULTIPLICACION")) {
+                        else if (Objects.equals(paquete[2], "*") && Objects.equals(Tipo, "MULTIPLICACION")) {
                             try {
                                 String acuseRecibo = "ACK;69;," + paquete[7] + "," + huella + "," + Origen[0];
                                 salida.writeUTF(acuseRecibo);
@@ -151,9 +161,12 @@ public class Servidor {
                                 System.out.println("No se pudo enviar el acuse de recibo.");
                             }
                             result = Integer.parseInt(paquete[1]) * Integer.parseInt(paquete[3]);
+                            String respuesta = "MOSTRAR;99;," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0] + "," + paquete[7]+ "," + paquete[9];
+
+                            salida.writeUTF(respuesta);
                         }
 
-                        if (Objects.equals(paquete[2], "/") && Objects.equals(Tipo, "DIVISION")) {
+                        else if (Objects.equals(paquete[2], "/") && Objects.equals(Tipo, "DIVISION")) {
                             try {
                                 String acuseRecibo = "ACK;69;," + paquete[7] + "," + huella + "," + Origen[0];
                                 salida.writeUTF(acuseRecibo);
@@ -161,13 +174,14 @@ public class Servidor {
                                 System.out.println("No se pudo enviar el acuse de recibo.");
                             }
                             result = Integer.parseInt(paquete[1]) / Integer.parseInt(paquete[3]);
+                            String respuesta = "MOSTRAR;99;," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0] + "," + paquete[7]+ "," + paquete[9];
+
+                            salida.writeUTF(respuesta);
                         }
 
-                        String respuesta = "MOSTRAR;99;," + paquete[1] + "," + paquete[2] + "," + paquete[3] + "," + result + "," + Origen[0] + "," + paquete[7]+ "," + paquete[9];
 
-                        salida.writeUTF(respuesta);
                     }
-                    if (paquete[0].startsWith("Cambio de tipo de operacion")){
+                    else if (paquete[0].startsWith("Cambio de tipo de operacion")){
                         // Verificar si la huella digital es la misma que la del servidor
                         if (Objects.equals(paquete[2], huella)) {
                             Tipo = paquete[1];

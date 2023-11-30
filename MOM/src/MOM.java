@@ -2,8 +2,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class
-MOM {
+public class MOM {
     private List<Integer> puertosDisponibles;
     private List<Socket> middlewareSockets;
     private List<DataOutputStream> middlewareSalidas;
@@ -66,7 +65,6 @@ MOM {
     public static void main(String[] args) {
         List<Integer> availablePorts = new ArrayList<>();
         availablePorts.add(12345);
-        availablePorts.add(12346);
         availablePorts.add(12347);
 
         MOM server = new MOM(availablePorts);
@@ -225,7 +223,7 @@ MOM {
                         }
                     } else if (temp.startsWith("MOSTRAR")) {
                         String[] parts = temp.split(",");
-                        int sourcePort = Integer.parseInt(parts[5]);
+                        int sourcePort = Integer.parseInt(parts[4]);
                         if (sourcePort == socket.getLocalPort()) {
                             // Si el puerto de origen es el mismo que el del middleware actual, reenvía el mensaje a todos los middlewares conectados
                             for (DataOutputStream salidaMiddleware : middlewareSalidas) {
@@ -238,7 +236,7 @@ MOM {
                                 }
                             }
                         }
-                    } else if (temp.startsWith("ACK")) {
+                    }else if (temp.startsWith("ACK")) {
                         String[] parts = temp.split(",");
                         int sourcePort = Integer.parseInt(parts[3]);
                         if (sourcePort == socket.getLocalPort()) {
@@ -269,7 +267,6 @@ MOM {
                             }
                         }
                     }
-
                     for (ManejadorDeClientes client : clientes) {
                         if (client != this) {
                             try {

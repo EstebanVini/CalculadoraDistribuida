@@ -1,14 +1,45 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class CargaDinamica {
 
+    private static int getRandomPort(List<Integer> availablePorts) {
+        if (!availablePorts.isEmpty()) {
+            int randomIndex = new Random().nextInt(availablePorts.size());
+            int serverPort = availablePorts.get(randomIndex);
+            return serverPort;
+        }
+        return -1; // No hay puertos disponibles
+    }
+
     public static void main(String[] args) {
         try {
-            int puerto = 12347;
-            Socket socket = new Socket("127.0.0.1", puerto);
+            List<Integer> availablePorts = new ArrayList<>();
+            availablePorts.add(12345);
+            availablePorts.add(12346);
+            availablePorts.add(12347);
+
+            int serverPort = getRandomPort(availablePorts);
+            Socket socket = null;
+
+
+
+            while (socket == null) {
+                serverPort = getRandomPort(availablePorts);
+                try {
+                    socket = new Socket("127.0.0.1", serverPort);
+                } catch (Exception e) {
+                    System.out.println("No se pudo conectar al middleware en el puerto " + serverPort + ". Reintentando...");
+                }
+            }
+
+            System.out.println("Conexión establecida con middleware en el puerto " + serverPort);
+
             DataInputStream entrada = new DataInputStream(socket.getInputStream());
             DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
 
@@ -49,7 +80,7 @@ public class CargaDinamica {
                     }
 
 
-                    String mensaje = "Cambio de tipo de operacion," + tipo + "," + huella + "," + Integer.toString(puerto);
+                    String mensaje = "Cambio de tipo de operacion," + tipo + "," + huella + "," + Integer.toString(serverPort);
                     salida.writeUTF(mensaje);
                 }
 

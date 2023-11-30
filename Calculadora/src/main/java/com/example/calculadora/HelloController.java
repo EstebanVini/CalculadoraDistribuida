@@ -418,13 +418,10 @@ public class HelloController {
         }
     }
 
-    public boolean VerificarHuella(String huellaEvento, String huella) {
+    public boolean VerificarHuellaEvento(String huellaEvento) {
         for (String mensajeEnviado : MensajesEnviados) {
             if (mensajeEnviado.contains(huellaEvento)) {
-                String huellaDigital = mensajeEnviado.split(",")[9];
-                if (huellaDigital.equals(huella)) {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -582,7 +579,6 @@ public class HelloController {
 
     public void initialize() {
         availablePorts.add(12345);
-        availablePorts.add(12346);
         availablePorts.add(12347);
 
 
@@ -596,7 +592,7 @@ public class HelloController {
                 }
 
                 try {
-                    Socket socket = new Socket("127.0.0.1", port);
+                    Socket socket = new Socket("127.0.0.1", 12345);
                     DataInputStream entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                     DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
 
@@ -604,7 +600,7 @@ public class HelloController {
                     middlewareEntradas.add(entrada);
                     middlewareSalidas.add(salida);
 
-                    System.out.println("Conexión establecida con middleware en el puerto " + port);
+                    System.out.println("Conexión establecida con middleware en el puerto " + getRandomPort(availablePorts) + "\n");
 
                     puertoActual = port;
 
@@ -624,7 +620,7 @@ public class HelloController {
                         String messageParts[] = temp.split(",");
                         if (temp.startsWith("MOSTRAR")) {
                             String huellaEvento = messageParts[6];
-                            if (!VerificarMensajeDePrueba(huellaEvento)) {
+                            if (!VerificarMensajeDePrueba(huellaEvento) && VerificarHuellaEvento(huellaEvento)) {
                                 System.out.println(temp + "\n");
                                 String resultado = messageParts[1] + " " + messageParts[2] + " " + messageParts[3] + " = " + messageParts[4];
                                 if (!historialResultados.isEmpty()) {
@@ -647,6 +643,7 @@ public class HelloController {
 
 
                         else if (temp.startsWith("ACK")) {
+                            System.out.println("Acuse de recibo recibido: " + temp + "\n");
                             AcusesDeRecibo.add(temp);
                             // si la huella del evento es de un mensaje de prueba, no se hace nada
                             String huellaEvento = messageParts[1];
