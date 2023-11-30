@@ -592,7 +592,7 @@ public class HelloController {
                 }
 
                 try {
-                    Socket socket = new Socket("127.0.0.1", 12345);
+                    Socket socket = new Socket("127.0.0.1", port);
                     DataInputStream entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                     DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
 
@@ -600,7 +600,7 @@ public class HelloController {
                     middlewareEntradas.add(entrada);
                     middlewareSalidas.add(salida);
 
-                    System.out.println("Conexión establecida con middleware en el puerto " + getRandomPort(availablePorts) + "\n");
+                    System.out.println("Conexión establecida con middleware en el puerto " + port + "\n");
 
                     puertoActual = port;
 

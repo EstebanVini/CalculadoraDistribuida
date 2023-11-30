@@ -56,7 +56,7 @@ public class Servidor {
             }
 
             try {
-                socket = new Socket("127.0.0.1", 12345);
+                socket = new Socket("127.0.0.1", serverPort);
 
                 entrada = new DataInputStream(System.in);
                 salida = new DataOutputStream(socket.getOutputStream());
@@ -69,7 +69,7 @@ public class Servidor {
                 Thread thread = new Thread(new Mensajes());
                 thread.start();
 
-                System.out.println("Conexión establecida con middleware en el puerto " + getRandomPort(availablePorts));
+                System.out.println("Conexión establecida con middleware en el puerto " + serverPort);
                 // Esperar a que la conexión se cierre antes de intentar una nueva conexión
                 thread.join();
             } catch (IOException | InterruptedException error) {
